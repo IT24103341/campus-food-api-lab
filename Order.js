@@ -1,0 +1,44 @@
+﻿const mongoose = require('mongoose');
+
+const orderItemSchema = new mongoose.Schema({
+    menuItem: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'MenuItem',
+        required: true
+    },
+    quantity: {
+        type: Number,
+        required: true,
+        min: 1
+    }
+}, {
+    _id: false
+});
+
+const orderSchema = new mongoose.Schema({
+    student: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Student',
+        required: true
+    },
+    items: {
+        type: [orderItemSchema],
+        validate: [arr => arr.length > 0, 'At least one item is required']
+    },
+    totalPrice: {
+        type: Number,
+        required: true,
+        min: 0
+    },
+    status: {
+        type: String,
+        enum: ['PLACED', 'PREPARING', 'DELIVERED', 'CANCELLED'],
+        default: 'PLACED'
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+});
+
+module.exports = mongoose.model('Order', orderSchema);
